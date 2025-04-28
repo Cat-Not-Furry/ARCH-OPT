@@ -1,0 +1,13 @@
+#!/bin/bash
+
+case "$1" in
++)
+  brightnessctl set 2%+
+  ;;
+-)
+  brightnessctl set 2%-
+  ;;
+*)
+  echo "Use [+|-]"
+  ;;
+esac
