@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "##########   Bienvenido a la ayuda para los scripts personalizados  ##########"
+echo "comando/binario                     Descripción"
+echo " update-arch        Actualiza el sistema (requiere sudo y confirmación)"
+echo "  cpu-mode          Cambia la frecuencia del procesador (requiere sudo)"
+echo "      Funciones:"
+echo "                    '+' : Utiliza la frecuencia maxima del procesador"
+echo "                          ¡¡Sobre calentamiento, uso al 100% del ventilador!!"
+echo "                    '=' : Utiliza la frecuencia que necesite en ese momento"
+echo "                          Uso normal del CPU configuración por defecto"
+echo "                    '-' : Utiliza la frecuencia minima del procesador"
+echo "                          Uso minimo del CPU con 100 MHz de tolerancia"
+echo "  bateria                  Muestra el porcentaje de la bateria"
+echo "  brillo                       Reduce o aumenta el brillo"
