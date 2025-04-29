@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "##########   Bienvenido a la ayuda para los scripts personalizados  ##########"
-echo "comando/binario                     Descripción"
+echo "comando                              Descripción"
 echo " update-arch        Actualiza el sistema (requiere sudo y confirmación)"
 echo "  cpu-mode          Cambia la frecuencia del procesador (requiere sudo)"
 echo "      Funciones:"
