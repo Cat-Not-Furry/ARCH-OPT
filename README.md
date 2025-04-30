@@ -68,6 +68,9 @@ git clone https://github.com/Cat-Not-Furry/VAIO-OPT.git
 cd VAIO-OPT
 ```
 ```ella
+chmod +x *
+```
+```ella
 sudo mv * /usr/local/bin
 ```
 <br/>
