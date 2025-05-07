@@ -2,6 +2,9 @@
 <h2>En este repositorio subire configuraciones generales para mejorar el rendimiento en laptops de dos decadas de antiguedad, con documentación  lo más detallada posible.</h2>
 <br/>
 
+> [!WARNING]
+> **Cabe aclarar que yo uso diariamente estos comandos y por lo tanto puedo dar fe que usarlos de una forma conciente asegura el mayor rendimiento posible en mi VAIO del 2005, sin embargo tomese el tiempo de leer y adaptar el codigo a su conveniencia si ese es el caso, ya que usted como usuario lo ejecuta bajo su propio riesgo. Aunque repito no me ha dado ningun problema ningun comando que he creado.**
+
 > [!IMPORTANT]
 > **Son scripts programados en `BASH`, pero por conveniencia les dire comandos. \
 > Asi mismo estas optimizaciones no estan destinadas a la automatización por obvios motivos.**
