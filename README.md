@@ -1,4 +1,4 @@
-<h1>VAIO-OPT</h1>
+<h1>ARCH-OPT</h1>
 <h2>En este repositorio subire configuraciones generales para mejorar el rendimiento en laptops de dos decadas de antiguedad, con documentación  lo más detallada posible.</h2>
 <br/>
 
