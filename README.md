@@ -104,7 +104,7 @@ mv ? scripts-help
 
 > [!WARNING]
 > **Si usas mucho `cpu-mode +` procura hacerle manteniminto preventivo más frecuentemente, debido al sobrecalentamiento por usar la frecuencia maxima.**
-<h2>update-arch</h2>
+<h3>update-arch</h3>
 <br/>
 <h4>Con este comando actualizas el sistema operativo, para mayor seguridad necesitas confirmar la descarga de los paquetes.</h4>
 <br/>
