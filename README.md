@@ -1,5 +1,5 @@
 <h1>ARCH-OPT</h1>
-<h2>En este repositorio subire configuraciones generales para mejorar el rendimiento en laptops de dos decadas de antiguedad, con documentación  lo más detallada posible.</h2>
+<h2>En este repositorio subire configuraciones scripts para mejorar el rendimiento en laptops de dos decadas de antiguedad, con documentación  lo más detallada posible.</h2>
 <br/>
 
 > [!WARNING]
