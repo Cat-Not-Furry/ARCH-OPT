@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "¡Por el poder de Torvalds!"
+sleep 1
+echo "¡Arch... Yo te actualizo!"
+sudo pacman -Syu
+
+if [ $? -eq 0 ]; then
+  echo "¡Actualización completada con exito!:v"
+  sleep 1
+else
+  echo "Algo fallo... ¿Será que Windows hizo de las suyas? >:v"
+fi

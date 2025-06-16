@@ -20,7 +20,11 @@ case "$1" in
   cpupower frequency-info | grep "The governor" | awk '{print $1,$2,$3}'
   ;;
 *)
-  echo "Uso: sudo cpu-mode [+|=|-|?]"
-  exit 1
+  echo "Uso: sudo cpu-mode [_______ + ______|_____ = ____|______ - _______|_____ ? _____]"
+  echo "                   [ Aumenta la     | Ocupa la   | Disminuye la   | Muestra     ]"
+  echo "                   [ frecuencia     | frecuencia | frecuencia     | la          ]"
+  echo "                   [ del procesador | que el     | del procesador | frecuencia  ]"
+  echo "                   [ a su maxima    | procesador | a su menor     | del         ]"
+  echo "                   [ capacidad.     | necesite.  | capacidad.     | procesador. ]"
   ;;
 esac

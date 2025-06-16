@@ -8,6 +8,9 @@ case "$1" in
   brightnessctl set 2%-
   ;;
 *)
-  echo "Use [+|-]"
+  echo "Uso [_____ + ____|______ - _____]"
+  echo "    [ Aumenta el | Disminuye el ]"
+  echo "    [ brillo en  | brillo en    ]"
+  echo "    [ un 2%.     | un 2%.       ]"
   ;;
 esac
