@@ -65,10 +65,10 @@ sudo mv * /usr/local/bin
 <h3>b. Descargar usando git.</h3>
 
 ```ella
-git clone https://github.com/Cat-Not-Furry/VAIO-OPT.git
+git clone https://github.com/Cat-Not-Furry/ARCH-OPT.git
 ```
 ```ella
-cd VAIO-OPT
+cd ARCH-OPT
 ```
 ```ella
 chmod +x *
@@ -104,7 +104,7 @@ mv ? scripts-help
 
 > [!WARNING]
 > **Si usas mucho `cpu-mode +` procura hacerle manteniminto preventivo más frecuentemente, debido al sobrecalentamiento por usar la frecuencia maxima.**
-<h3>update-arch</h3>
+<h3>actualizar</h3>
 <br/>
 <h4>Con este comando actualizas el sistema operativo, para mayor seguridad necesitas confirmar la descarga de los paquetes.</h4>
 <br/>
