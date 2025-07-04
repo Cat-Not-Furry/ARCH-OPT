@@ -11,14 +11,14 @@
 
 > [!NOTE]
 > **Por el momento los scripts solo funcionaran en `Arch Linux`, despues creare otros repositorios. \
-> Asegurate de tener las siguientes herramientas para poder ejecutar 3/5 scripts que las necesitan. \
+> Asegurate de tener las siguientes herramientas para poder ejecutar 5/7 scripts que las necesitan. \
 > Asi mismo le recomiendo actualizar su sistema antes de instalar.**
 
 ```ella
 sudo pacman -Syu
 ```
 <br/>
-<h2>Para configurar el la frecuencia del procesador:</h2>
+<h2>Para configurar el la frecuencia del procesador y ver la frecuencia del mismo:</h2>
 
 ```ella
 sudo pacman -S cpupower
@@ -47,6 +47,12 @@ sudo pacman -S brightnessctl
 
 ```ella
 sudo pacman -S acpi
+```
+
+<h2>Ver la temperatura del CPU</h2>
+
+```ella
+sudo pacman -S lm_sensors bc
 ```
 > [!TIP]
 > **Recomiendo instalar `tlp` para optimizar la energia**
@@ -93,8 +99,14 @@ mv ? scripts-help
 <h4>Mostrara un tabla con la descripción de lo que hacen los demás comandos.</h4>
 <br/>
 <h3>bateria</h3>
+<h4>Con este comando podras ver la bateria que tienes, (muy practico si me lo preguntas).</h4>
 <br/>
-<h4>Con este comando podras ver la bateria que tienes, muy (practico si me lo preguntas).</h4>
+<h3>frecuencia</h3>
+<h4>Muestra la frecuencia actual del CPU.</h4>
+<br>
+<h3>temperatura</h3>
+<h4>Muestra la temperatura actual del CPU.</h4>
+<br>
 <h3>brillo</h3>
 <br/>
 <h4>Con este comando puedes bajar y subir el brillo desde la terminal por si estas usando una sesion tty o (por si eres un rarito como yo que no quiere mover el mouse para nada).</h4>
