@@ -1,0 +1,23 @@
+#!/bin/bash
+
+case "$1" in
+f)
+  feh --randomize --bg-fill ~/.config/i3/fondos/* 
+  ;;
+
+t)
+  picom &
+  ;;
+
+a)
+  feh --randomize --bg-fill ~/.config/i3/fondos/* && picom &
+  ;;
+
+k)
+  id=$(pgrep picom) && kill $id
+  ;;
+
+*)
+  echo "Uso [ f | t | a | k ]"
+  ;;
+esac
