@@ -1,0 +1,27 @@
+#!/bin/bash
+
+PRIMARY=$(xrandr | grep " connected primary" | awk '{print $1}')
+EXTERNAL=$(xrandr | grep " connected" | grep -v "primary" | awk '{print $1}')
+
+if [ -z "$EXTERNAL" ]; then
+  notify-send "🖥️ Error" "No se ha detectado ninguna pantalla externa."
+  exit 1
+fi
+
+options="󰹑 Solo Portátil\n󰹑 = 󰹑 Duplicar\n Extender\n󰹑 Solo Externa"
+choice=$(echo -e "$options" | dmenu -i -p "$1"| awk '{print $1}')
+
+case $choice in
+"󰹑 Solo Portátil")
+  xrandr --output "$PRIMARY" --auto --output "$EXTERNAL" --off
+  ;;
+"󰹑 = 󰹑 Duplicar")
+  xrandr --output "$PRIMARY" --auto --output "$EXTERNAL" --auto --same-as "$PRIMARY"
+  ;;
+" Extender")
+  xrandr --output "$PRIMARY" --auto --primary --output "$EXTERNAL" --auto --right-of "$PRIMARY"
+  ;;
+"󰹑 Solo Externa")
+  xrandr --output "$EXTERNAL" --auto --primary --output "$PRIMARY" --off
+  ;;
+esac
