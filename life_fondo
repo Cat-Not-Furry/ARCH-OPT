@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# --- FUNCIÓN DE LIMPIEZA ---
+cleanup() {
+    echo -e "\nSaliendo... Limpiando proceso."
+    killall mpv 2>/dev/null
+    killall xwinwrap 2>/dev/null
+    exit 0
+}
+
+# --- ATRApar SEÑALES ---
+trap cleanup SIGINT SIGTERM
+
+# --- VERIFICACIÓN DE ARGUMENTOS ---
+VIDEO_PATH="$1"
+if [ -z "$VIDEO_PATH" ]; then
+  echo "Error: Debes proporcionar la ruta a un archivo de video."
+  echo "Uso: $0 /ruta/al/video.mp4"
+  exit 1
+fi
+
+# --- LIMPIEZA DE PROCESOS ANTERIORES ---
+killall xwinwrap 2>/dev/null
+
+# --- LIMPIAR FONDO ANTERIOR ---
+feh --bg-scale ~/.config/i3/fondos/black.png
+
+# --- INICIAR EL FONDO DE VIDEO (EN SEGUNDO PLANO) ---
+echo "Iniciando video: $VIDEO_PATH"
+xwinwrap -ov -fs -s -st -sp -- \
+  mpv -wid WID --no-audio --loop=inf \
+  --hwdec=auto --display-fps-override=24 \
+  --no-osc --no-osd-bar --quiet "$VIDEO_PATH" &
+
+# Pausa para que la ventana de xwinwrap se cree
+sleep 1
+
+# Reiniciamos picom para que lea la configuración y excluya la ventana de xwinwrap
+
+# --- INICIAR EL GESTOR AUTOMÁTICO ---
+echo "Gestor automático iniciado. Monitoreando ventanas de i3..."
+echo "Presiona Ctrl+C para detener."
+
+check_fullscreen() {
+  tree=$(i3-msg -t get_tree)
+  fullscreen_window=$(echo "$tree" | jq '.. | select(.fullscreen_mode? == 1)')
+  if [ -n "$fullscreen_window" ]; then
+    pkill -STOP xwinwrap
+  else
+    pkill -CONT xwinwrap
+  fi
+}
+
+check_fullscreen
+
+i3-msg -t subscribe -m '["window"]' |
+while read -r event; do
+  check_fullscreen
+done

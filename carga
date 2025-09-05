@@ -1,0 +1,21 @@
+#!/bin/bash
+
+case "$1" in
+-b)
+  sudo mv /etc/tlp.conf /etc/tlp.conf.yaml
+  sudo mv /etc/tlp.conf.bak /etc/tlp.conf
+  sudo tlp start
+  ;;
++b)
+  sudo mv /etc/tlp.conf /etc/tlp.conf.bak
+  sudo mv /etc/tlp.conf.yaml /etc/tlp.conf
+  sudo tlp start
+  ;;
+?)
+  ls /etc | grep "tlp.conf"
+  tail -n 1 /etc/tlp.conf
+  ;;
+*)
+  echo "Uso $0 [-b | +b | ? ]"
+  ;;
+esac

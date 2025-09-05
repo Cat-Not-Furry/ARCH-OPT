@@ -14,7 +14,7 @@ a)
   ;;
 
 k)
-  id=$(pgrep picom) && kill $id
+  killall picom
   ;;
 
 *)

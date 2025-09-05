@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RED='\[\e[0;31m\]'
+# RED='\[\e[0;31m\]'
 temp=$(sensors | grep "Core 0" | awk '{gsub("[+°C]", "", $3); print $3}')
 temp_num=$(echo "$temp" | sed 's/[^0-9.]//g')
 
