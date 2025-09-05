@@ -7,7 +7,8 @@
 
 > [!IMPORTANT]
 > **Son scripts programados en `BASH`, pero por conveniencia les dire comandos. \
-> Asi mismo estas optimizaciones no estan destinadas a la automatización por obvios motivos.**
+> Asi mismo estas optimizaciones no estan destinadas a la automatización por obvios motivos. \
+> el script carga funciono con tlp**
 
 > [!NOTE]
 > **Por el momento los scripts solo funcionaran en `Arch Linux`, despues creare otros repositorios. \
@@ -120,6 +121,15 @@ mv ? scripts-help
 <br/>
 <h4>Con este comando actualizas el sistema operativo, para mayor seguridad necesitas confirmar la descarga de los paquetes.</h4>
 <br/>
+
+>[!NOTE
+>life_fondo necesita las siu=guientes dependencias para funcionar especificamente en i3
+
+```bash
+sudo pacman -S --needed mpv jq feh i3
+yay -S xwinwrap-git
+```
+
 Creditos a DeepSeek y a ChatGPT, por ayudarme a optimizar mi laptop.<br/>
 https://www.deepseek.com/<br/>
 https://chatgpt.com/.
