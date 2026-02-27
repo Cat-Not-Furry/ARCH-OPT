@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PRIMARY=$(xrandr 2>/dev/null | grep " connected primary" | awk '{print $1}')
+EXTERNAL=$(xrandr 2>/dev/null | grep " connected" | grep -v "primary" | awk '{print $1}')
+
+if [[ -z "$PRIMARY" ]] && [[ -z "$EXTERNAL" ]]; then
+  echo "Error: No se pudieron detectar monitores"
+  sleep 1
+  echo "Verifica que xrandr esté instalado: sudo pacman -S xorg-xrandr"
+  exit 1
+fi
+
+if [[ -z "$PRIMARY" ]] && [[ -n "$EXTERNAL" ]]; then
+  PRIMARY="$EXTERNAL"
+  EXTERNAL=""
+fi
+
+if [[ $# -eq 0 ]] || [[ "$1" == "?" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+  echo "Uso: monitores [p|d|ex|s]"
+  echo ""
+  echo "Monitores detectados:"
+  echo "  Portátil:   ${PRIMARY:-No detectado}"
+  echo "  Externa:    ${EXTERNAL:-No detectada}"
+  echo ""
+  echo "Opciones:"
+  echo "  p     - Solo portátil"
+  [[ -n "$EXTERNAL" ]] && echo "  d     - Duplicar pantallas"
+  [[ -n "$EXTERNAL" ]] && echo "  ex    - Extender a la derecha"
+  [[ -n "$EXTERNAL" ]] && echo "  s     - Solo externa"
+  echo "  ?     - Mostrar esta ayuda"
+  exit 0
+fi
+
+case "$1" in
+p)
+  echo "Solo portátil: $PRIMARY"
+  xrandr --output "$PRIMARY" --auto --primary
+  [[ -n "$EXTERNAL" ]] && xrandr --output "$EXTERNAL" --off
+  ;;
+d)
+  if [[ -z "$EXTERNAL" ]]; then
+    echo "Error: No hay monitor externo conectado"
+    exit 1
+  fi
+  echo "Duplicando: $PRIMARY ↔ $EXTERNAL"
+  xrandr --output "$PRIMARY" --auto --primary \
+    --output "$EXTERNAL" --auto --same-as "$PRIMARY"
+  ;;
+ex)
+  if [[ -z "$EXTERNAL" ]]; then
+    echo "Error: No hay monitor externo conectado"
+    exit 1
+  fi
+  echo "Extendiendo: $PRIMARY → $EXTERNAL"
+  xrandr --output "$PRIMARY" --auto --primary \
+    --output "$EXTERNAL" --auto --right-of "$PRIMARY"
+  echo "Si tiene problemas con la resolucion pruebe:"
+  echo "xrandr --output HDMI-2 --mode 1920x1080 --right-of eDP-1"
+  ;;
+s)
+  if [[ -z "$EXTERNAL" ]]; then
+    echo "Error: No hay monitor externo conectado"
+    exit 1
+  fi
+  echo "Solo externa: $EXTERNAL"
+  xrandr --output "$EXTERNAL" --auto --primary \
+    --output "$PRIMARY" --off
+  ;;
+*)
+  echo "Opción no válida: $1"
+  echo "   Usar: monitores ? para ayuda"
+  exit 1
+  ;;
+esac
+
+echo "Configuración aplicada"

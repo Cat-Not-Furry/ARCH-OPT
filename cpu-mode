@@ -1,30 +1,64 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-case "$1" in
-+)
-  sudo cpupower frequency-set --governor performance
+set -euo pipefail
+
+if ! command -v cpupower &>/dev/null; then
+  echo "Error: cpupower no está instalado"
+  sleep 1
+  echo "Instalar con: sudo pacman -S cpupower"
+  exit 1
+fi
+
+if [[ $EUID -ne 0 ]]; then
+  echo "Este script requiere privilegios de superusuario"
+  sleep 1
+  echo "Ejecutar con: sudo cpu-mode [opción]"
+  exit 1
+fi
+
+case "${1:-}" in
++ | max)
+  cpupower frequency-set --governor performance
   echo "Modo Turbo: CPU al máximo rendimiento"
-  cpupower frequency-info | grep "The governor" | awk '{print $1,$2,$3}'
   ;;
-=)
-  sudo cpupower frequency-set --governor schedutil
-  echo "Modo Normal: CPU se ajustara al consumo"
-  cpupower frequency-info | grep "The governor" | awk '{print $1,$2,$3}'
+= | auto)
+  cpupower frequency-set --governor schedutil
+  echo "Modo Normal: CPU se ajustará según la carga"
   ;;
--)
-  sudo cpupower frequency-set --governor powersave
+- | min)
+  cpupower frequency-set --governor powersave
   echo "Modo Eco: CPU en ahorro de energía"
-  cpupower frequency-info | grep "The governor" | awk '{print $1,$2,$3}'
   ;;
-?)
-  cpupower frequency-info | grep "The governor" | awk '{print $1,$2,$3}'
+? | info)
+  current_governor=$(cpupower frequency-info | grep -i "governor" | head -1 | awk '{print $3}')
+  current_freq=$(awk '{printf "%.1fGHz\n", $1/1000000}' /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
+  echo "Estado actual:"
+  echo "Governor: $current_governor"
+  echo "Frecuencia: $current_freq"
   ;;
 *)
-  echo "Uso: sudo cpu-mode [_______ + ______|_____ = ____|______ - _______|_____ ? _____]"
-  echo "                   [ Aumenta la     | Ocupa la   | Disminuye la   | Muestra     ]"
-  echo "                   [ frecuencia     | frecuencia | frecuencia     | la          ]"
-  echo "                   [ del procesador | que el     | del procesador | frecuencia  ]"
-  echo "                   [ a su maxima    | procesador | a su menor     | del         ]"
-  echo "                   [ capacidad.     | necesite.  | capacidad.     | procesador. ]"
+  cat <<'EOF'
+Uso: sudo cpu-mode [OPCIÓN]
+
+Opciones:
+  +, max    Frecuencia máxima (rendimiento)
+  =, auto           Frecuencia dinámica (recomendado)
+  -, min      Frecuencia mínima (ahorro)
+  ?, info           Muestra configuración actual
+
+Alias disponibles:
+  max, min, info
+
+Ejemplos:
+  sudo cpu-mode +     # Máximo rendimiento
+  sudo cpu-mode =     # Frecuencia dinámica
+  sudo cpu-mode info  # Ver estado actual
+EOF
+  exit 1
   ;;
 esac
+
+if [[ "$1" != "?" && "$1" != "info" && "$1" != "status" ]]; then
+  echo ""
+  cpu-mode info
+fi

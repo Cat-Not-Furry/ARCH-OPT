@@ -1,59 +1,225 @@
 #!/bin/bash
 
+# --- CONFIGURACIÓN ---
+BLACK_BG="$HOME/.config/i3/fondos/black.png"
+DEFAULT_FEHBG="feh --randomize --bg-fill"
+
 # --- FUNCIÓN DE LIMPIEZA ---
 cleanup() {
-    echo -e "\nSaliendo... Limpiando proceso."
-    killall mpv 2>/dev/null
-    killall xwinwrap 2>/dev/null
-    exit 0
+  echo -e "\nSaliendo... Restaurando configuración original."
+
+  # Detener procesos
+  killall mpv 2>/dev/null
+  killall xwinwrap 2>/dev/null
+
+  # Solo restaurar fondo si picom está activo
+  if pgrep -x "picom" >/dev/null; then
+    echo "Picom detectado, restaurando fondo original..."
+    $DEFAULT_FEHBG ~/.config/i3/fondos/*
+  fi
+
+  exit 0
+}
+
+# --- FUNCIÓN PARA OBTENER MONITORES CON RESOLUCIÓN ---
+get_monitors() {
+  xrandr --current | grep " connected" | while read -r line; do
+    # Extraer nombre del monitor
+    monitor=$(echo "$line" | awk '{print $1}')
+
+    # Buscar resolución activa (la que tiene el *)
+    if [[ "$line" =~ \+ ]] || [[ "$line" =~ [0-9]+x[0-9]+\+[0-9]+\+[0-9]+ ]]; then
+      # Si ya tiene la geometría en la línea principal
+      geometry=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
+    else
+      # Buscar en las siguientes líneas la resolución activa
+      geometry=$(xrandr --current | grep -A 5 "^$monitor" | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
+    fi
+
+    # Si encontramos geometría, procesamos
+    if [ -n "$geometry" ]; then
+      # Obtener solo la resolución (sin posición)
+      resolution=$(echo "$geometry" | cut -d'+' -f1)
+
+      # Obtener posición (offset)
+      position="+$(echo "$geometry" | cut -d'+' -f2)+$(echo "$geometry" | cut -d'+' -f3)"
+
+      # Crear geometría completa con posición
+      full_geometry="${resolution}${position}"
+
+      # Guardar información del monitor
+      echo "$monitor:$full_geometry:$resolution"
+    fi
+  done
+}
+
+# --- FUNCIÓN PARA INICIAR VIDEO EN MONITOR ESPECÍFICO ---
+start_video_on_monitor() {
+  local monitor="$1"
+  local geometry="$2"
+  local resolution="$3"
+  local video="$4"
+
+  echo "Iniciando video en monitor: $monitor"
+  echo "  Geometría: $geometry"
+  echo "  Resolución: $resolution"
+
+  # Extraer ancho y alto para las opciones de mpv
+  local width=$(echo "$resolution" | cut -d'x' -f1)
+  local height=$(echo "$resolution" | cut -d'x' -f2)
+
+  # Usar xwinwrap con geometría específica del monitor
+  # y opciones optimizadas para la resolución
+  xwinwrap -g "$geometry" -ov -s -st -sp -nf -- \
+    mpv -wid WID --no-audio --loop=inf \
+    --hwdec=auto --no-border \
+    --no-osc --no-osd-bar --quiet \
+    --ontop --no-input-default-bindings \
+    --keepaspect=yes \
+    --keepaspect-window=yes \
+    --video-unscaled=no \
+    --autofit="$resolution" \
+    --geometry="$resolution" \
+    --video-zoom=0 \
+    --video-pan-x=0 --video-pan-y=0 \
+    --video-align-x=0 --video-align-y=0 \
+    --vo=xv \
+    "$video" &
+
+  # Pequeña pausa entre instancias
+  sleep 0.5
+}
+
+# --- FUNCIÓN PARA OBTENER LA RESOLUCIÓN TOTAL DEL ESCRITORIO ---
+get_desktop_resolution() {
+  local total_width=0
+  local max_height=0
+
+  while IFS= read -r monitor_info; do
+    if [ -n "$monitor_info" ]; then
+      resolution=$(echo "$monitor_info" | cut -d':' -f3)
+      width=$(echo "$resolution" | cut -d'x' -f1)
+      height=$(echo "$resolution" | cut -d'x' -f2)
+
+      # Sumar anchos para obtener ancho total
+      total_width=$((total_width + width))
+
+      # Actualizar altura máxima
+      if [ "$height" -gt "$max_height" ]; then
+        max_height=$height
+      fi
+    fi
+  done <<<"$1"
+
+  echo "${total_width}x${max_height}"
 }
 
 # --- ATRApar SEÑALES ---
-trap cleanup SIGINT SIGTERM
+trap cleanup SIGINT SIGTERM SIGTSTP
 
 # --- VERIFICACIÓN DE ARGUMENTOS ---
 VIDEO_PATH="$1"
-if [ -z "$VIDEO_PATH" ]; then
-  echo "Error: Debes proporcionar la ruta a un archivo de video."
+if [ -z "$VIDEO_PATH" ] || [ ! -f "$VIDEO_PATH" ]; then
+  echo "Error: Debes proporcionar una ruta válida a un archivo de video."
   echo "Uso: $0 /ruta/al/video.mp4"
   exit 1
 fi
 
 # --- LIMPIEZA DE PROCESOS ANTERIORES ---
 killall xwinwrap 2>/dev/null
+killall mpv 2>/dev/null
 
-# --- LIMPIAR FONDO ANTERIOR ---
-feh --bg-scale ~/.config/i3/fondos/black.png
-
-# --- INICIAR EL FONDO DE VIDEO (EN SEGUNDO PLANO) ---
-echo "Iniciando video: $VIDEO_PATH"
-xwinwrap -ov -fs -s -st -sp -- \
-  mpv -wid WID --no-audio --loop=inf \
-  --hwdec=auto --display-fps-override=24 \
-  --no-osc --no-osd-bar --quiet "$VIDEO_PATH" &
-
-# Pausa para que la ventana de xwinwrap se cree
-sleep 1
-
-# Reiniciamos picom para que lea la configuración y excluya la ventana de xwinwrap
-
-# --- INICIAR EL GESTOR AUTOMÁTICO ---
-echo "Gestor automático iniciado. Monitoreando ventanas de i3..."
-echo "Presiona Ctrl+C para detener."
-
-check_fullscreen() {
-  tree=$(i3-msg -t get_tree)
-  fullscreen_window=$(echo "$tree" | jq '.. | select(.fullscreen_mode? == 1)')
-  if [ -n "$fullscreen_window" ]; then
-    pkill -STOP xwinwrap
+# --- INICIALIZACIÓN CONDICIONAL DEL FONDO ---
+if pgrep -x "picom" >/dev/null; then
+  echo "Picom detectado, configurando fondo temporal..."
+  if [ -f "$BLACK_BG" ]; then
+    feh --bg-scale "$BLACK_BG"
   else
-    pkill -CONT xwinwrap
+    # Crear fondo negro temporal si no existe
+    convert -size 1x1 xc:black /tmp/black_bg.png 2>/dev/null || {
+      # Si convert no está disponible, usar un comando alternativo
+      echo "Creando fondo negro con ffmpeg..."
+      ffmpeg -f lavfi -i color=c=black:s=1x1 -frames:v 1 /tmp/black_bg.png 2>/dev/null || {
+        # Si todo falla, usar un fondo negro simple con feh
+        feh --bg-scale /dev/null
+      }
+    }
+    feh --bg-scale /tmp/black_bg.png 2>/dev/null
   fi
-}
+fi
 
-check_fullscreen
+# --- OBTENER MONITORES ---
+MONITORS=$(get_monitors)
+MONITOR_COUNT=$(echo "$MONITORS" | wc -l)
 
-i3-msg -t subscribe -m '["window"]' |
-while read -r event; do
-  check_fullscreen
+echo "Monitores detectados: $MONITOR_COUNT"
+echo "Información de monitores:"
+echo "$MONITORS" | while IFS= read -r line; do
+  if [ -n "$line" ]; then
+    monitor=$(echo "$line" | cut -d':' -f1)
+    geometry=$(echo "$line" | cut -d':' -f2)
+    resolution=$(echo "$line" | cut -d':' -f3)
+    echo "  - $monitor: $resolution (pos: $(echo $geometry | cut -d'+' -f2-3))"
+  fi
+done
+
+# --- OBTENER RESOLUCIÓN TOTAL DEL ESCRITORIO ---
+DESKTOP_RES=$(get_desktop_resolution "$MONITORS")
+echo "Resolución total del escritorio: $DESKTOP_RES"
+
+# --- INICIAR EL FONDO DE VIDEO EN CADA MONITOR ---
+echo -e "\nIniciando video: $VIDEO_PATH"
+echo "Creando instancia por monitor con resolución adaptada..."
+
+while IFS= read -r monitor_info; do
+  if [ -n "$monitor_info" ]; then
+    monitor=$(echo "$monitor_info" | cut -d':' -f1)
+    geometry=$(echo "$monitor_info" | cut -d':' -f2)
+    resolution=$(echo "$monitor_info" | cut -d':' -f3)
+    start_video_on_monitor "$monitor" "$geometry" "$resolution" "$VIDEO_PATH"
+  fi
+done <<<"$MONITORS"
+
+# Esperar a que se creen las ventanas
+echo "Esperando que las ventanas se inicien..."
+sleep 3
+
+# Verificar que los procesos estén corriendo
+if pgrep -f "mpv.*$VIDEO_PATH" >/dev/null; then
+  echo "✓ Videos iniciados correctamente"
+  echo "✓ Los videos se reproducirán de forma continua"
+else
+  echo "✗ Error: Los videos no se iniciaron correctamente"
+  exit 1
+fi
+
+# Reiniciar picom si está activo (para excluir las ventanas)
+if pgrep -x "picom" >/dev/null; then
+  echo "Reiniciando picom para aplicar exclusiones..."
+  pkill -USR1 picom || true
+fi
+
+# --- MANTENER EL SCRIPT EN EJECUCIÓN ---
+echo -e "\n🎬 Fondos de video activos en ambos monitores"
+echo "📺 Video adaptado a la resolución de cada monitor"
+echo "⚠️  Presiona Ctrl+C para detener los videos y restaurar el fondo normal"
+echo "🔄 Los videos se reproducirán en bucle infinito"
+
+# Mantener el script corriendo hasta que el usuario presione Ctrl+C
+while true; do
+  # Verificar cada 5 segundos que los procesos sigan vivos
+  if ! pgrep -f "mpv.*$VIDEO_PATH" >/dev/null; then
+    echo "⚠️  Se detectó que los procesos de video terminaron. Reiniciando..."
+    # Reiniciar los videos si murieron
+    while IFS= read -r monitor_info; do
+      if [ -n "$monitor_info" ]; then
+        monitor=$(echo "$monitor_info" | cut -d':' -f1)
+        geometry=$(echo "$monitor_info" | cut -d':' -f2)
+        resolution=$(echo "$monitor_info" | cut -d':' -f3)
+        start_video_on_monitor "$monitor" "$geometry" "$resolution" "$VIDEO_PATH"
+      fi
+    done <<<"$MONITORS"
+    sleep 3
+  fi
+  sleep 5
 done

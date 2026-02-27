@@ -1,16 +1,48 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-case "$1" in
-+)
-  brightnessctl set 2%+
-  ;;
--)
-  brightnessctl set 2%-
-  ;;
-*)
-  echo "Uso [_____ + ____|______ - _____]"
-  echo "    [ Aumenta el | Disminuye el ]"
-  echo "    [ brillo en  | brillo en    ]"
-  echo "    [ un 2%.     | un 2%.       ]"
-  ;;
+set -euo pipefail
+
+if ! command -v brightnessctl &> /dev/null; then
+    echo "Error: brightnessctl no esta instalado"
+    sleep 1
+    echo "Instalar con: sudo pacman -S brightnessctl"
+    exit 1
+fi
+
+case "${1:-}" in
+    +)
+        brightnessctl set 2%+
+        echo "Brillo aumentado"
+        ;;
+    -)
+        brightnessctl set 2%-
+        echo "Brillo disminuido"
+        ;;
+    [0-9]*)
+        brightnessctl set "$1"% 2>/dev/null || {
+            echo "Error: El valor debe estar entre 1 y 100"
+            exit 1
+        }
+        echo "Brillo establecido al $1%"
+        ;;
+    *)
+        cat << EOF
+Uso: brillo [OPCION]
+
+Opciones:
+  +        Aumenta el brillo en 2%
+  -        Disminuye el brillo en 2%
+  [1-100]           Establece brillo al porcentaje especificado
+
+Ejemplos:
+  brillo +          # Aumentar brillo
+  brillo -          # Disminuir brillo
+  brillo 50         # Establecer al 50%
+EOF
+        ;;
 esac
+
+current=$(brightnessctl get)
+max=$(brightnessctl max)
+percent=$((current * 100 / max))
+echo "   Brillo actual: $percent%"
