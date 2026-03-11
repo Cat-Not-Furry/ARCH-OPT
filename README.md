@@ -37,7 +37,7 @@ Todo pensado para ser **rápido, legible y divertido** (sí, hay mensajes con :v
 
 > [!IMPORTANT]
 > **Son scripts programados en `BASH`, pero por conveniencia les dire comandos. \
-> Asi mismo estas optimizaciones no estan destinadas a la automatización por obvios motivos. \
+> Asi mismo estas optimizaciones no estan destinadas a la automatización por obvios motivos.**
 
 > [!NOTE]
 > **Por el momento los scripts solo funcionaran en `Arch Linux`, después creare otros repositorios. \
@@ -53,7 +53,7 @@ sudo pacman -Syu
 ```bash
 sudo pacman -S cpupower
 ```
-> **No es necesario pero si recomendable instalar:** \
+**No es necesario pero si recomendable instalar:**
 > **CPU `INTEL`**
 
 ```bash
@@ -128,7 +128,7 @@ sudo mv * /usr/local/bin
 ```bash
 mv ? -help
 ```
-> **O**
+>**O**
 
 ```bash
 mv ? scripts-help
@@ -145,8 +145,11 @@ export OTHER_DIR="$HOME/mis_fondos/otra_carpeta"
 ```
 Los scripts que usan fondos (fondo y life_fondo) respetan estas variables.
 
-***O dentro del código**
+**O dentro del código**
 
+```bash
+xdg-open fondo life_fondo
+```
 
 # bateria
 **Con este comando podras ver la bateria que tienes, (muy practico si me lo preguntas).**
