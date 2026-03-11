@@ -1,4 +1,4 @@
-<h1>ARCH-OPT</h1>
+# ARCH-OPT
 
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 [![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?logo=arch-linux&logoColor=fff)](https://archlinux.org/)
@@ -10,7 +10,7 @@ Una colección de scripts Bash para darle nueva vida a laptops de dos décadas d
 
 > *“¡Por el poder de Torvalds!”* – CNF
 
-## 📖 Descripción
+## Descripción
 
 **ARCH-OPT** nace de la necesidad de tener un control fino y rápido sobre el rendimiento de un equipo antiguo corriendo Arch Linux. En lugar de recordar largos comandos o andar rebuscando en menús, estos scripts te permiten:
 
