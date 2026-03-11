@@ -31,8 +31,6 @@ Todo pensado para ser **rápido, legible y divertido** (sí, hay mensajes con :v
 - **Modo interactivo y modo directo** en varios scripts (ej. `fondo s` te muestra una lista y luego eliges número, o `fondo s 3` va directo).
 - **Soporte para dos carpetas de fondos**: la principal (`la puede configurar el usuario`) y una secundaria (`carpeta secundaria`), para tener separados los wallpapers "normales" de los "experimentales".
 - **Diseñado para hardware antiguo**: valores por defecto conservadores, incrementos pequeños de brillo (2%), governors apropiados, etc.
-- **Instalador propio** (próximamente) al estilo archinstall, donde podrás elegir qué componentes instalar.
-
 
 > [!WARNING]
 > **Cabe aclarar que yo uso diariamente estos comandos y por lo tanto puedo dar fe que usarlos de una forma consciente aseguró el mayor rendimiento posible en mi VAIO del 2005 y me ayuda con algunas tareas en mi laptop Thinkpad, sin embargo tómese el tiempo de leer y adaptar el código a su conveniencia si ese es el caso, ya que usted como usuario lo ejecuta bajo su propio riesgo. Aunque repito no me ha dado ningún problema ningún comando que he creado.**
@@ -40,7 +38,6 @@ Todo pensado para ser **rápido, legible y divertido** (sí, hay mensajes con :v
 > [!IMPORTANT]
 > **Son scripts programados en `BASH`, pero por conveniencia les dire comandos. \
 > Asi mismo estas optimizaciones no estan destinadas a la automatización por obvios motivos. \
-> el script carga funciona con tlp**
 
 > [!NOTE]
 > **Por el momento los scripts solo funcionaran en `Arch Linux`, después creare otros repositorios. \
